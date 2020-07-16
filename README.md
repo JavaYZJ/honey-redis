@@ -8,12 +8,14 @@
 
 ### 如何使用
 ####1、引入依赖
+```java  
     <!-- honey-redis-->
     <dependency>
         <groupId>com.eboy</groupId>
         <artifactId>honey-redis</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </dependency>
+```
 ####2、在您的启动类上打上注解@EnableHoneyRedis
 ```java  
   @EnableHoneyRedis
