@@ -1,4 +1,4 @@
-# honey-redis
+# Honey-Redis
 ### 简介
 ####honey-redis 是基于Redis二次封装的一个中间件。目前里面封装实现了 Redis 五种基本数据类型的常用api、Redis全局唯一ID、Redis分布式锁 三个模块功能。
 
@@ -7,15 +7,13 @@
 ####缺点：目前版本实现暂时是基于 Redis 单机下，尚不能支持分布式部署（集群）下等生产环境下使用。后续版本将升级支持此场景，敬请期待。当然如果您使用的单机模式，可大胆使用。
 
 ### 如何使用
-####1、引入依赖
-```java  
+####1、引入依赖(由于未上传到maven中央仓库，所以引入需要下载源码，本地maven打包后再引入)
     <!-- honey-redis-->
     <dependency>
         <groupId>com.eboy</groupId>
         <artifactId>honey-redis</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </dependency>
-```
 ####2、在您的启动类上打上注解@EnableHoneyRedis
 ```java  
   @EnableHoneyRedis
