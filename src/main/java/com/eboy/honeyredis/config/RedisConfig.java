@@ -30,7 +30,6 @@ public class RedisConfig {
         template.setHashValueSerializer(jacksonSerializer);
         template.setEnableTransactionSupport(true);
         template.afterPropertiesSet();
-
         return template;
     }
 

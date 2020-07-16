@@ -1,10 +1,12 @@
 package com.eboy.honeyredis.component;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,9 +16,13 @@ import java.util.concurrent.TimeUnit;
  * @author yangzhijie
  * @date 2020/7/15 17:53
  */
-@Component
+@Slf4j
 public final class HoneyRedis {
 
+    /**
+     * 日志模板
+     */
+    private final String LOG_PATTERN = "honey-redis:[ 方法：{}；参数：{}；异常原因：{}]";
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -28,7 +34,7 @@ public final class HoneyRedis {
      *
      * @param key  键
      * @param time 时间(秒)
-     * @return
+     * @return 是否过期
      */
     public boolean expire(String key, long time) {
         try {
@@ -37,7 +43,8 @@ public final class HoneyRedis {
             }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key, "time", time);
+            log.warn(LOG_PATTERN, "expire", argsStr, e.getMessage());
             return false;
         }
     }
@@ -49,6 +56,7 @@ public final class HoneyRedis {
      * @return 时间(秒) 返回0代表为永久有效
      */
     public long getExpire(String key) {
+        Assert.notNull(key, "key not null");
         return redisTemplate.getExpire(key, TimeUnit.SECONDS);
     }
 
@@ -62,7 +70,8 @@ public final class HoneyRedis {
         try {
             return redisTemplate.hasKey(key);
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key);
+            log.warn(LOG_PATTERN, "hasKey", argsStr, e.getMessage());
             return false;
         }
     }
@@ -106,7 +115,8 @@ public final class HoneyRedis {
             redisTemplate.opsForValue().set(key, value);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key);
+            log.warn(LOG_PATTERN, "set", argsStr, e.getMessage());
             return false;
         }
     }
@@ -128,7 +138,8 @@ public final class HoneyRedis {
             }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key, "value", value, "time", time);
+            log.warn(LOG_PATTERN, "set", argsStr, e.getMessage());
             return false;
         }
     }
@@ -140,7 +151,7 @@ public final class HoneyRedis {
      * @param delta 要增加几(大于0)
      * @return
      */
-    public long incr(String key, long delta) {
+    public Long incr(String key, long delta) {
         if (delta < 0) {
             throw new RuntimeException("递增因子必须大于0");
         }
@@ -154,7 +165,7 @@ public final class HoneyRedis {
      * @param delta 要减少几(小于0)
      * @return
      */
-    public long decr(String key, long delta) {
+    public Long decr(String key, long delta) {
         if (delta < 0) {
             throw new RuntimeException("递减因子必须大于0");
         }
@@ -196,7 +207,8 @@ public final class HoneyRedis {
             redisTemplate.opsForHash().putAll(key, map);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key, "map", map);
+            log.warn(LOG_PATTERN, "hmset", argsStr, e.getMessage());
             return false;
         }
     }
@@ -217,7 +229,8 @@ public final class HoneyRedis {
             }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key, "map", map, "time", time);
+            log.warn(LOG_PATTERN, "hmset", argsStr, e.getMessage());
             return false;
         }
     }
@@ -235,7 +248,8 @@ public final class HoneyRedis {
             redisTemplate.opsForHash().put(key, item, value);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key, "item", item, "value", value);
+            log.warn(LOG_PATTERN, "hset", argsStr, e.getMessage());
             return false;
         }
     }
@@ -257,7 +271,8 @@ public final class HoneyRedis {
             }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key, "item", item, "value", value, "time", time);
+            log.warn(LOG_PATTERN, "hset", argsStr, e.getMessage());
             return false;
         }
     }
@@ -319,7 +334,8 @@ public final class HoneyRedis {
         try {
             return redisTemplate.opsForSet().members(key);
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key);
+            log.warn(LOG_PATTERN, "sGet", argsStr, e.getMessage());
             return null;
         }
     }
@@ -335,7 +351,8 @@ public final class HoneyRedis {
         try {
             return redisTemplate.opsForSet().isMember(key, value);
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key, "value", value);
+            log.warn(LOG_PATTERN, "sHasKey", argsStr, e.getMessage());
             return false;
         }
     }
@@ -351,7 +368,8 @@ public final class HoneyRedis {
         try {
             return redisTemplate.opsForSet().add(key, values);
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key, "values", values);
+            log.warn(LOG_PATTERN, "sSet", argsStr, e.getMessage());
             return 0;
         }
     }
@@ -367,11 +385,13 @@ public final class HoneyRedis {
     public long sSetAndTime(String key, long time, Object... values) {
         try {
             Long count = redisTemplate.opsForSet().add(key, values);
-            if (time > 0)
+            if (time > 0) {
                 expire(key, time);
+            }
             return count;
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key, "time", time, "values", values);
+            log.warn(LOG_PATTERN, "sSetAndTime", argsStr, e.getMessage());
             return 0;
         }
     }
@@ -386,7 +406,8 @@ public final class HoneyRedis {
         try {
             return redisTemplate.opsForSet().size(key);
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key);
+            log.warn(LOG_PATTERN, "sGetSetSize", argsStr, e.getMessage());
             return 0;
         }
     }
@@ -400,10 +421,10 @@ public final class HoneyRedis {
      */
     public long setRemove(String key, Object... values) {
         try {
-            Long count = redisTemplate.opsForSet().remove(key, values);
-            return count;
+            return redisTemplate.opsForSet().remove(key, values);
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key, "values", values);
+            log.warn(LOG_PATTERN, "setRemove", argsStr, e.getMessage());
             return 0;
         }
     }
@@ -421,7 +442,8 @@ public final class HoneyRedis {
         try {
             return redisTemplate.opsForList().range(key, start, end);
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key, "start", start, "end", end);
+            log.warn(LOG_PATTERN, "lGet", argsStr, e.getMessage());
             return null;
         }
     }
@@ -436,7 +458,8 @@ public final class HoneyRedis {
         try {
             return redisTemplate.opsForList().size(key);
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key);
+            log.warn(LOG_PATTERN, "lGetListSize", argsStr, e.getMessage());
             return 0;
         }
     }
@@ -452,7 +475,8 @@ public final class HoneyRedis {
         try {
             return redisTemplate.opsForList().index(key, index);
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key, "index", index);
+            log.warn(LOG_PATTERN, "lGetIndex", argsStr, e.getMessage());
             return null;
         }
     }
@@ -462,7 +486,6 @@ public final class HoneyRedis {
      *
      * @param key   键
      * @param value 值
-     * @param time  时间(秒)
      * @return
      */
     public boolean lSet(String key, Object value) {
@@ -470,7 +493,8 @@ public final class HoneyRedis {
             redisTemplate.opsForList().rightPush(key, value);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key, "value", value);
+            log.warn(LOG_PATTERN, "lSet", argsStr, e.getMessage());
             return false;
         }
     }
@@ -486,11 +510,13 @@ public final class HoneyRedis {
     public boolean lSet(String key, Object value, long time) {
         try {
             redisTemplate.opsForList().rightPush(key, value);
-            if (time > 0)
+            if (time > 0) {
                 expire(key, time);
+            }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key, "value", value, "time", time);
+            log.warn(LOG_PATTERN, "lSet", argsStr, e.getMessage());
             return false;
         }
     }
@@ -500,7 +526,6 @@ public final class HoneyRedis {
      *
      * @param key   键
      * @param value 值
-     * @param time  时间(秒)
      * @return
      */
     public boolean lSet(String key, List<Object> value) {
@@ -508,7 +533,8 @@ public final class HoneyRedis {
             redisTemplate.opsForList().rightPushAll(key, value);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key, "value", value);
+            log.warn(LOG_PATTERN, "lSet", argsStr, e.getMessage());
             return false;
         }
     }
@@ -524,11 +550,13 @@ public final class HoneyRedis {
     public boolean lSet(String key, List<Object> value, long time) {
         try {
             redisTemplate.opsForList().rightPushAll(key, value);
-            if (time > 0)
+            if (time > 0) {
                 expire(key, time);
+            }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key, "value", value, "time", time);
+            log.warn(LOG_PATTERN, "lSet", argsStr, e.getMessage());
             return false;
         }
     }
@@ -543,11 +571,11 @@ public final class HoneyRedis {
      */
     public boolean lUpdateIndex(String key, long index, Object value) {
         try {
-
             redisTemplate.opsForList().set(key, index, value);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key, "index", index, "value", value);
+            log.warn(LOG_PATTERN, "lUpdateIndex", argsStr, e.getMessage());
             return false;
         }
     }
@@ -562,12 +590,24 @@ public final class HoneyRedis {
      */
     public long lRemove(String key, long count, Object value) {
         try {
-            Long remove = redisTemplate.opsForList().remove(key, count, value);
-            return remove;
+            return redisTemplate.opsForList().remove(key, count, value);
         } catch (Exception e) {
-            e.printStackTrace();
+            String argsStr = convertArgsStr("key", key, "value", value);
+            log.warn(LOG_PATTERN, "lRemove", argsStr, e.getMessage());
             return 0;
         }
+    }
+
+    /**
+     * 将参数转换为日志打印的模板参数
+     *
+     * @param args 可变参数
+     * @return 模板参数str
+     */
+    private String convertArgsStr(Object... args) {
+        StringBuilder builder = new StringBuilder();
+        Arrays.stream(args).forEach(arg -> builder.append(arg).append(":"));
+        return String.valueOf(builder.deleteCharAt(builder.length() - 1));
     }
 
 }
