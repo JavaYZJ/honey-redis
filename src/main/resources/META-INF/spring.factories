@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.eboy.honeyredis.config.RedisAutoConfiguration
+
