@@ -1,4 +1,4 @@
-# honey-redis
+# Honey-Redis
 ### 简介
 ####honey-redis 是基于Redis二次封装的一个中间件。目前里面封装实现了 Redis 五种基本数据类型的常用api、Redis全局唯一ID、Redis分布式锁 三个模块功能。
 
