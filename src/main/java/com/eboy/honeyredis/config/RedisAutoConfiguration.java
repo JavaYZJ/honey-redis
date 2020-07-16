@@ -10,6 +10,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.integration.redis.util.RedisLockRegistry;
 
 
 /**
@@ -19,7 +20,7 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @EnableConfigurationProperties(RedisProperties.class)
 @ConditionalOnClass({HoneyRedis.class, HoneyRedisId.class, HoneyRedisLock.class})
-@Import(RedisConfig.class)
+@Import({RedisConfig.class, RedisLockConfig.class})
 public class RedisAutoConfiguration {
 
     @Bean
@@ -36,7 +37,7 @@ public class RedisAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public HoneyRedisLock honeyRedisLock() {
-        return new HoneyRedisLock();
+    public HoneyRedisLock honeyRedisLock(RedisLockRegistry redisLockRegistry) {
+        return new HoneyRedisLock(redisLockRegistry);
     }
 }
