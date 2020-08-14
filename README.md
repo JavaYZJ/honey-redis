@@ -30,7 +30,7 @@
     @Autowired
     private HoneyRedis honeyRedis; 
 ```
-####4、HoneyRedisId 封装实现了全局唯一ID,支持高并发、自定义业务前缀生成分布式唯一Id(目前是在Redis单机下)
+####4、HoneyRedisId 封装实现了全局唯一ID,支持高并发、自定义业务前缀生成分布式唯一Id
 ```java
    @SpringBootTest
    @RunWith(SpringRunner.class)
