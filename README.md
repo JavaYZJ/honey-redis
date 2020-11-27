@@ -11,7 +11,7 @@
 ```java  
     <!-- honey-redis-->
     <dependency>
-        <groupId>red.honeyy</groupId>
+        <groupId>red.honey</groupId>
         <artifactId>honey-redis</artifactId>
         <version>1.0.0</version>
     </dependency>
