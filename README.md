@@ -13,7 +13,7 @@
     <dependency>
         <groupId>com.eboy</groupId>
         <artifactId>honey-redis</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>v1.0.0</version>
     </dependency>
 ```
 ####2、在您的启动类上打上注解@EnableHoneyRedis
