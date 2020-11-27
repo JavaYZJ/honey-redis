@@ -11,9 +11,9 @@
 ```java  
     <!-- honey-redis-->
     <dependency>
-        <groupId>com.eboy</groupId>
+        <groupId>red.honeyy</groupId>
         <artifactId>honey-redis</artifactId>
-        <version>v1.0.0</version>
+        <version>1.0.0</version>
     </dependency>
 ```
 ####2、在您的启动类上打上注解@EnableHoneyRedis
