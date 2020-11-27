@@ -1,4 +1,4 @@
-package com.eboy.honeyredis.config;
+package red.honey.redis.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,7 +1,7 @@
-package com.eboy.honeyredis.annotation;
+package red.honey.redis.annotation;
 
-import com.eboy.honeyredis.config.RedisAutoConfiguration;
 import org.springframework.context.annotation.Import;
+import red.honey.redis.config.RedisAutoConfiguration;
 
 import java.lang.annotation.*;
 

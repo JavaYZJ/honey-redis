@@ -1,8 +1,5 @@
-package com.eboy.honeyredis.config;
+package red.honey.redis.config;
 
-import com.eboy.honeyredis.component.HoneyRedis;
-import com.eboy.honeyredis.component.HoneyRedisId;
-import com.eboy.honeyredis.component.HoneyRedisLock;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
@@ -11,6 +8,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.integration.redis.util.RedisLockRegistry;
+import red.honey.redis.component.HoneyRedis;
+import red.honey.redis.component.HoneyRedisId;
+import red.honey.redis.component.HoneyRedisLock;
 
 
 /**
