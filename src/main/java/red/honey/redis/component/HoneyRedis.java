@@ -2,7 +2,11 @@ package red.honey.redis.component;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisStringCommands;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.types.Expiration;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
@@ -24,8 +28,17 @@ public final class HoneyRedis {
      */
     private final String LOG_PATTERN = "honey-redis:[ 方法：{}；参数：{}；异常原因：{}]";
 
+    /**
+     * 1000毫秒过期，1000ms内的重复请求会认为重复
+     */
+    private final long expireTime = 500;
+    private final long expireAt = System.currentTimeMillis() + expireTime;
+
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     // =============================common============================
 
@@ -597,6 +610,26 @@ public final class HoneyRedis {
             return 0;
         }
     }
+
+    // ----------------------------isDuplicate----------------------------
+
+    public boolean isReqDuplicate(String userId, String method, String deDuplicateParam) {
+        String KEY = "deDuplicate:U=" + userId + "M=" + method + "P=" + deDuplicateParam;
+        return isReqDuplicate(KEY);
+    }
+
+    public boolean isReqDuplicate(String key) {
+        String val = "expireAt@" + expireAt;
+        // NOTE:直接SETNX不支持带过期时间，所以设置+过期不是原子操作，极端情况下可能设置了就不过期了
+        // 后面相同请求可能会误以为需要去重，所以这里使用底层API，保证SETNX+过期时间是原子操作
+        Boolean firstSet = stringRedisTemplate.execute((RedisCallback<Boolean>) connection -> connection.set(key.getBytes(), val.getBytes(), Expiration.milliseconds(expireTime),
+                RedisStringCommands.SetOption.SET_IF_ABSENT));
+
+        final boolean isConsiderDup;
+        isConsiderDup = firstSet == null || !firstSet;
+        return isConsiderDup;
+    }
+
 
     /**
      * 将参数转换为日志打印的模板参数
