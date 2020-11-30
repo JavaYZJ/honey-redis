@@ -30,7 +30,7 @@
     @Autowired
     private HoneyRedis honeyRedis; 
 ```
-####3.1、HoneyRedis新特性--重复请求/并发请求处理
+####3.1、HoneyRedis新特性--重复请求/并发请求处理。封装在HoneyRedis组件中
 ```java
     public boolean isReqDuplicate(String userId, String method, String deDuplicateParam)
   
