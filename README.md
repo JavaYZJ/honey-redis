@@ -30,6 +30,12 @@
     @Autowired
     private HoneyRedis honeyRedis; 
 ```
+####3.1、HoneyRedis新特性--重复请求/并发请求处理。封装在HoneyRedis组件中
+```java
+    public boolean isReqDuplicate(String userId, String method, String deDuplicateParam)
+  
+    public boolean isReqDuplicate(String key)
+```
 ####4、HoneyRedisId 封装实现了全局唯一ID,支持高并发、自定义业务前缀生成分布式唯一Id
 ```java
    @SpringBootTest
