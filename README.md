@@ -7,13 +7,13 @@
 ####缺点：。。。
 
 ### 如何使用
-####1、引入依赖(由于未上传到maven中央仓库，所以引入需要下载源码，本地maven打包后再引入)
+####1、引入依赖
 ```java  
     <!-- honey-redis-->
     <dependency>
-        <groupId>com.eboy</groupId>
+        <groupId>red.honey</groupId>
         <artifactId>honey-redis</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0</version>
     </dependency>
 ```
 ####2、在您的启动类上打上注解@EnableHoneyRedis
@@ -29,6 +29,12 @@
 ```java
     @Autowired
     private HoneyRedis honeyRedis; 
+```
+####3.1、HoneyRedis新特性--重复请求/并发请求处理
+```java
+    public boolean isReqDuplicate(String userId, String method, String deDuplicateParam)
+  
+    public boolean isReqDuplicate(String key)
 ```
 ####4、HoneyRedisId 封装实现了全局唯一ID,支持高并发、自定义业务前缀生成分布式唯一Id
 ```java
