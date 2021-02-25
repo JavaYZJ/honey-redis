@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.integration.redis.util.RedisLockRegistry;
+import red.honey.redis.component.HoneyGeo;
 import red.honey.redis.component.HoneyRedis;
 import red.honey.redis.component.HoneyRedisId;
 import red.honey.redis.component.HoneyRedisLock;
@@ -22,6 +23,12 @@ import red.honey.redis.component.HoneyRedisLock;
 @ConditionalOnClass({HoneyRedis.class, HoneyRedisId.class, HoneyRedisLock.class})
 @Import({RedisConfig.class, RedisLockConfig.class})
 public class RedisAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean
+    public HoneyGeo honeyGeo() {
+        return new HoneyGeo();
+    }
 
     @Bean
     @ConditionalOnMissingBean

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>red.honey</groupId>
     <artifactId>honey-redis</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <name>honey-redis</name>
     <url>https://github.com/JavaYZJ/honey-redis</url>
     <description>honey-redis project for Spring Boot</description>
